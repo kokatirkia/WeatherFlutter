@@ -18,35 +18,61 @@ class CurrentWeatherScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
           children: [
-            SizedBox(height: 40),
-            Expanded(
-              flex: 1,
-              child: searchBox(bloc),
-            ),
-            Expanded(
-              flex: 10,
-              child: StreamBuilder(
-                  stream: bloc.weather,
-                  builder: (context, AsyncSnapshot<WeatherResponse> snapshot) {
-                    if (snapshot.hasData) {
-                      return currentWeather(snapshot, bloc);
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text(snapshot.error.toString()));
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  }),
-            ),
+            searchBox(bloc),
+            weatherInfo(bloc),
           ],
         ),
       ),
     );
   }
 
+  Widget searchBox(WeatherBloc bloc) {
+    return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.all(32),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      height: 54,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: TextField(
+        onSubmitted: (value) {
+          bloc.fetchWeather(value);
+        },
+        style: TextStyle(color: Colors.blueGrey),
+        decoration: InputDecoration(
+          suffixIcon: Icon(Icons.search),
+          hintText: "Search",
+          hintStyle: TextStyle(
+            color: Colors.blueGrey,
+          ),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget weatherInfo(WeatherBloc bloc) {
+    return Expanded(
+      child: StreamBuilder(
+          stream: bloc.weather,
+          builder: (context, AsyncSnapshot<WeatherResponse> snapshot) {
+            if (snapshot.hasData) {
+              return currentWeather(snapshot, bloc);
+            } else if (snapshot.hasError) {
+              return Center(child: Text(snapshot.error.toString()));
+            }
+            return Center(child: CircularProgressIndicator());
+          }),
+    );
+  }
+
   Widget currentWeather(
       AsyncSnapshot<WeatherResponse> snapshot, WeatherBloc bloc) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           snapshot.data.name,
@@ -84,87 +110,92 @@ class CurrentWeatherScreen extends StatelessWidget {
     );
   }
 
-  Widget searchBox(WeatherBloc bloc) {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      height: 54,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: TextField(
-        onSubmitted: (value) {
-          bloc.fetchWeather(value);
-        },
-        style: TextStyle(color: Colors.blueGrey),
-        decoration: InputDecoration(
-          suffixIcon: Icon(Icons.search),
-          hintText: "Search",
-          hintStyle: TextStyle(
-            color: Colors.blueGrey,
-          ),
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-        ),
-      ),
-    );
-  }
-
   Widget bottomDetailBox(AsyncSnapshot<WeatherResponse> snapshot) {
     return Container(
       margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
         color: Colors.blueGrey,
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: Column(children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                Text('sunrise'),
-                Text(
-                    '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunrise * 1000))} AM'),
-              ],
-            ),
-            Column(
-              children: [
-                Text('sunset'),
-                Text(
-                    '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunset * 1000))} PM'),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: 40.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                Text('pressure'),
-                Text('${snapshot.data.main.pressure} mBar')
-              ],
-            ),
-            Column(
-              children: [
-                Text('humidity'),
-                Text('${snapshot.data.main.humidity} %')
-              ],
-            ),
-            Column(
-              children: [
-                Text("wind"),
-                Text('${snapshot.data.wind.speed} km/h'),
-              ],
-            ),
-          ],
-        ),
-      ]),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/sunrise.png",
+                    width: 30.0,
+                    height: 30.0,
+                    fit: BoxFit.cover,
+                  ),
+                  Text('sunrise'),
+                  Text(
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunrise * 1000))} AM'),
+                ],
+              ),
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/sunset.png",
+                    width: 30.0,
+                    height: 30.0,
+                    fit: BoxFit.cover,
+                  ),
+                  Text('sunset'),
+                  Text(
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunset * 1000))} PM'),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 40.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/pressure.png",
+                    width: 30.0,
+                    height: 30.0,
+                    fit: BoxFit.cover,
+                  ),
+                  Text('pressure'),
+                  Text('${snapshot.data.main.pressure} mBar')
+                ],
+              ),
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/humidity.png",
+                    width: 30.0,
+                    height: 30.0,
+                    fit: BoxFit.cover,
+                  ),
+                  Text('humidity'),
+                  Text('${snapshot.data.main.humidity} %')
+                ],
+              ),
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/wind.png",
+                    width: 30.0,
+                    height: 30.0,
+                    fit: BoxFit.cover,
+                  ),
+                  Text("wind"),
+                  Text('${snapshot.data.wind.speed} km/h'),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
