@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:weather_flutter/bloc/bloc.dart';
-import 'package:weather_flutter/bloc/provider.dart';
 import 'package:weather_flutter/networking/model/weather_response.dart';
 
 class CurrentWeatherScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final bloc = Provider.of(context);
+    final bloc = Provider.of<WeatherBloc>(context);
     bloc.fetchWeather('Tbilisi');
 
     return Scaffold(
