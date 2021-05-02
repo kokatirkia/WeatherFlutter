@@ -11,16 +11,18 @@ class CurrentWeatherScreen extends StatelessWidget {
     final bloc = Provider.of<WeatherBloc>(context);
     bloc.fetchWeather('Tbilisi');
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            searchBox(bloc),
-            weatherInfo(bloc),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              searchBox(bloc),
+              weatherInfo(bloc),
+            ],
+          ),
         ),
       ),
     );
