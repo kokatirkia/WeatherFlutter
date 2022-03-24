@@ -10,7 +10,7 @@ class WeatherBloc {
 
   final _weatherFetcher = BehaviorSubject<WeatherResponse>();
 
-  Observable<WeatherResponse> get weather => _weatherFetcher.stream;
+  Stream<WeatherResponse> get weather => _weatherFetcher.stream;
 
   fetchWeather(String city) async {
     Response response = await _repository.fetchWeather(city);

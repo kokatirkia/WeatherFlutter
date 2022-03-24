@@ -1,17 +1,16 @@
-class Sys{
+import 'package:json_annotation/json_annotation.dart';
+
+part 'sys.g.dart';
+
+@JsonSerializable()
+class Sys {
   String country;
   int sunrise;
   int sunset;
-  int id;
-  int type;
-  double message;
 
-  Sys(parsedJson) {
-    country = parsedJson['country'];
-    sunrise = parsedJson['sunrise'];
-    sunset = parsedJson['sunset'];
-    id = parsedJson['id'];
-    type = parsedJson['type'];
-    message = parsedJson['message'];
-  }
+  Sys(this.country, this.sunrise, this.sunset);
+
+  factory Sys.fromJson(Map<String, dynamic> json) => _$SysFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SysToJson(this);
 }

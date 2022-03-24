@@ -77,33 +77,33 @@ class CurrentWeatherScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          snapshot.data.name,
+          snapshot.data!.name,
           style: TextStyle(
             fontSize: 50,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
-          '${snapshot.data.main.temp.toString()} °C',
+          '${snapshot.data!.main.temp.toString()} °C',
           style: TextStyle(
             fontSize: 55,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
-          'Feels like: ${snapshot.data.main.feelsLike} °C',
+          'Feels like: ${snapshot.data!.main.feelsLike} °C',
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         Text(
-          snapshot.data.weather[0].description,
+          snapshot.data!.weather[0].description,
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         Image.network(
-          'https://openweathermap.org/img/wn/${snapshot.data.weather[0].icon}.png',
+          'https://openweathermap.org/img/wn/${snapshot.data!.weather[0].icon}.png',
           height: 50,
           width: 50,
         ),
@@ -136,7 +136,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                   ),
                   Text('sunrise'),
                   Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunrise * 1000))} AM'),
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data!.sys.sunrise * 1000))} AM'),
                 ],
               ),
               Column(
@@ -149,7 +149,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                   ),
                   Text('sunset'),
                   Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.sys.sunset * 1000))} PM'),
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data!.sys.sunset * 1000))} PM'),
                 ],
               ),
             ],
@@ -167,7 +167,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text('pressure'),
-                  Text('${snapshot.data.main.pressure} mBar')
+                  Text('${snapshot.data!.main.pressure} mBar')
                 ],
               ),
               Column(
@@ -179,7 +179,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text('humidity'),
-                  Text('${snapshot.data.main.humidity} %')
+                  Text('${snapshot.data!.main.humidity} %')
                 ],
               ),
               Column(
@@ -191,7 +191,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text("wind"),
-                  Text('${snapshot.data.wind.speed} km/h'),
+                  Text('${snapshot.data!.wind.speed} km/h'),
                 ],
               ),
             ],

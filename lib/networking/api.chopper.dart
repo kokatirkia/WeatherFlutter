@@ -6,17 +6,21 @@ part of 'api.dart';
 // ChopperGenerator
 // **************************************************************************
 
+// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations
 class _$Api extends Api {
-  _$Api([ChopperClient client]) {
+  _$Api([ChopperClient? client]) {
     if (client == null) return;
     this.client = client;
   }
 
+  @override
   final definitionType = Api;
 
-  Future<Response> fetchWeather(dynamic city, dynamic units, dynamic appid) {
+  @override
+  Future<Response<dynamic>> fetchWeather(
+      dynamic city, dynamic units, dynamic appid) {
     final $url = 'weather';
-    final Map<String, dynamic> $params = {
+    final $params = <String, dynamic>{
       'q': city,
       'units': units,
       'appid': appid
