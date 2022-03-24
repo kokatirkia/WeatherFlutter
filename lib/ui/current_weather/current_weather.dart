@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_flutter/bloc/CurrentWeatherState.dart';
 import 'package:weather_flutter/bloc/bloc.dart';
 import 'package:weather_flutter/networking/model/weather_response.dart';
 
@@ -60,9 +61,12 @@ class CurrentWeatherScreen extends StatelessWidget {
     return Expanded(
       child: StreamBuilder(
           stream: bloc.weather,
-          builder: (context, AsyncSnapshot<WeatherResponse> snapshot) {
+          builder: (context, AsyncSnapshot<CurrentWeatherState> snapshot) {
             if (snapshot.hasData) {
-              return currentWeather(snapshot, bloc);
+              if (snapshot.data!.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return currentWeather(snapshot.data!.weatherResponse!, bloc);
             } else if (snapshot.hasError) {
               return Center(child: Text(snapshot.error.toString()));
             }
@@ -71,48 +75,47 @@ class CurrentWeatherScreen extends StatelessWidget {
     );
   }
 
-  Widget currentWeather(
-      AsyncSnapshot<WeatherResponse> snapshot, WeatherBloc bloc) {
+  Widget currentWeather(WeatherResponse weatherResponse, WeatherBloc bloc) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          snapshot.data!.name,
+          weatherResponse.name,
           style: TextStyle(
             fontSize: 50,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
-          '${snapshot.data!.main.temp.toString()} °C',
+          '${weatherResponse.main.temp.toString()} °C',
           style: TextStyle(
             fontSize: 55,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
-          'Feels like: ${snapshot.data!.main.feelsLike} °C',
+          'Feels like: ${weatherResponse.main.feelsLike} °C',
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         Text(
-          snapshot.data!.weather[0].description,
+          weatherResponse.weather[0].description,
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         Image.network(
-          'https://openweathermap.org/img/wn/${snapshot.data!.weather[0].icon}.png',
+          'https://openweathermap.org/img/wn/${weatherResponse.weather[0].icon}.png',
           height: 50,
           width: 50,
         ),
-        bottomDetailBox(snapshot),
+        bottomDetailBox(weatherResponse),
       ],
     );
   }
 
-  Widget bottomDetailBox(AsyncSnapshot<WeatherResponse> snapshot) {
+  Widget bottomDetailBox(WeatherResponse weatherResponse) {
     return Container(
       margin: const EdgeInsets.all(15.0),
       padding: const EdgeInsets.all(15.0),
@@ -136,7 +139,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                   ),
                   Text('sunrise'),
                   Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data!.sys.sunrise * 1000))} AM'),
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunrise * 1000))} AM'),
                 ],
               ),
               Column(
@@ -149,7 +152,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                   ),
                   Text('sunset'),
                   Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(snapshot.data!.sys.sunset * 1000))} PM'),
+                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunset * 1000))} PM'),
                 ],
               ),
             ],
@@ -167,7 +170,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text('pressure'),
-                  Text('${snapshot.data!.main.pressure} mBar')
+                  Text('${weatherResponse.main.pressure} mBar')
                 ],
               ),
               Column(
@@ -179,7 +182,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text('humidity'),
-                  Text('${snapshot.data!.main.humidity} %')
+                  Text('${weatherResponse.main.humidity} %')
                 ],
               ),
               Column(
@@ -191,7 +194,7 @@ class CurrentWeatherScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text("wind"),
-                  Text('${snapshot.data!.wind.speed} km/h'),
+                  Text('${weatherResponse.wind.speed} km/h'),
                 ],
               ),
             ],

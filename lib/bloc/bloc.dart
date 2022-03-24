@@ -1,27 +1,29 @@
-import 'dart:convert';
-
 import 'package:chopper/chopper.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:weather_flutter/bloc/CurrentWeatherState.dart';
 import 'package:weather_flutter/networking/model/weather_response.dart';
 import 'package:weather_flutter/repository/repository.dart';
 
 class WeatherBloc {
   Repository _repository = Repository();
 
-  final _weatherFetcher = BehaviorSubject<WeatherResponse>();
+  final _currentWeatherState = BehaviorSubject<CurrentWeatherState>();
 
-  Stream<WeatherResponse> get weather => _weatherFetcher.stream;
+  Stream<CurrentWeatherState> get weather => _currentWeatherState.stream;
 
   fetchWeather(String city) async {
+    _currentWeatherState.sink.add(CurrentWeatherState(true));
+
     Response response = await _repository.fetchWeather(city);
     if (response.statusCode == 200) {
-      _weatherFetcher.sink.add(WeatherResponse.fromJson(json.decode(response.bodyString)));
+      _currentWeatherState.sink.add(
+          CurrentWeatherState(false, WeatherResponse.fromJson(response.body)));
     } else {
-      _weatherFetcher.sink.addError("Error");
+      _currentWeatherState.sink.addError("Error");
     }
   }
 
   dispose() {
-    _weatherFetcher.close();
+    _currentWeatherState.close();
   }
 }
