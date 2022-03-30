@@ -118,11 +118,13 @@ class CurrentWeatherScreen extends StatelessWidget {
 
   Widget bottomDetailBox(WeatherResponse weatherResponse) {
     return Container(
-      margin: const EdgeInsets.all(15.0),
       padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
         color: Colors.blueGrey,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40),
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,7 +159,7 @@ class CurrentWeatherScreen extends StatelessWidget {
     return Column(
       children: [
         Image.asset(
-          "assets/sunrise.png",
+          imageSrc,
           width: 30.0,
           height: 30.0,
           fit: BoxFit.cover,
