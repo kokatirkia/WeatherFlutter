@@ -12,18 +12,14 @@ class CurrentWeatherScreen extends StatelessWidget {
     final bloc = Provider.of<WeatherBloc>(context);
     bloc.fetchWeather('Tbilisi');
 
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              searchBox(bloc),
-              weatherInfo(bloc),
-            ],
-          ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Column(
+          children: [
+            searchBox(bloc),
+            weatherInfo(bloc),
+          ],
         ),
       ),
     );
@@ -32,7 +28,7 @@ class CurrentWeatherScreen extends StatelessWidget {
   Widget searchBox(WeatherBloc bloc) {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.all(32),
+      margin: EdgeInsets.all(30),
       padding: EdgeInsets.symmetric(horizontal: 20),
       height: 54,
       decoration: BoxDecoration(
@@ -58,60 +54,65 @@ class CurrentWeatherScreen extends StatelessWidget {
   }
 
   Widget weatherInfo(WeatherBloc bloc) {
-    return Expanded(
-      child: StreamBuilder(
-          stream: bloc.weather,
-          builder: (context, AsyncSnapshot<CurrentWeatherState> snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.loading) {
-                return Center(child: CircularProgressIndicator());
-              }
-              return currentWeather(snapshot.data!.weatherResponse!, bloc);
-            } else if (snapshot.hasError) {
-              return Center(child: Text(snapshot.error.toString()));
+    return StreamBuilder(
+        stream: bloc.weather,
+        builder: (context, AsyncSnapshot<CurrentWeatherState> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.loading) {
+              return progressBar();
+            } else if (snapshot.data!.weatherResponse != null) {
+              return mainInfo(snapshot.data!.weatherResponse!, bloc);
             }
-            return Center(child: CircularProgressIndicator());
-          }),
-    );
+          } else if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+          return progressBar();
+        });
   }
 
-  Widget currentWeather(WeatherResponse weatherResponse, WeatherBloc bloc) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          weatherResponse.name,
-          style: TextStyle(
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
+  Widget progressBar() {
+    return Expanded(child: Center(child: CircularProgressIndicator()));
+  }
+
+  Widget mainInfo(WeatherResponse weatherResponse, WeatherBloc bloc) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            weatherResponse.name,
+            style: TextStyle(
+              fontSize: 50,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        Text(
-          '${weatherResponse.main.temp.toString()} °C',
-          style: TextStyle(
-            fontSize: 55,
-            fontWeight: FontWeight.bold,
+          Text(
+            '${weatherResponse.main.temp.toString()} °C',
+            style: TextStyle(
+              fontSize: 55,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        Text(
-          'Feels like: ${weatherResponse.main.feelsLike} °C',
-          style: TextStyle(
-            fontSize: 20,
+          Text(
+            'Feels like: ${weatherResponse.main.feelsLike} °C',
+            style: TextStyle(
+              fontSize: 20,
+            ),
           ),
-        ),
-        Text(
-          weatherResponse.weather[0].description,
-          style: TextStyle(
-            fontSize: 20,
+          Text(
+            weatherResponse.weather[0].description,
+            style: TextStyle(
+              fontSize: 20,
+            ),
           ),
-        ),
-        Image.network(
-          'https://openweathermap.org/img/wn/${weatherResponse.weather[0].icon}.png',
-          height: 50,
-          width: 50,
-        ),
-        bottomDetailBox(weatherResponse),
-      ],
+          Image.network(
+            'https://openweathermap.org/img/wn/${weatherResponse.weather[0].icon}.png',
+            height: 50,
+            width: 50,
+          ),
+          bottomDetailBox(weatherResponse),
+        ],
+      ),
     );
   }
 
@@ -129,78 +130,41 @@ class CurrentWeatherScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/sunrise.png",
-                    width: 30.0,
-                    height: 30.0,
-                    fit: BoxFit.cover,
-                  ),
-                  Text('sunrise'),
-                  Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunrise * 1000))} AM'),
-                ],
-              ),
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/sunset.png",
-                    width: 30.0,
-                    height: 30.0,
-                    fit: BoxFit.cover,
-                  ),
-                  Text('sunset'),
-                  Text(
-                      '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunset * 1000))} PM'),
-                ],
-              ),
+              boxItem("assets/sunrise.png", 'sunrise',
+                  '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunrise * 1000))} AM'),
+              boxItem("assets/sunset.png", 'sunset',
+                  '${DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(weatherResponse.sys.sunset * 1000))} AM'),
             ],
           ),
           SizedBox(height: 40.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/pressure.png",
-                    width: 30.0,
-                    height: 30.0,
-                    fit: BoxFit.cover,
-                  ),
-                  Text('pressure'),
-                  Text('${weatherResponse.main.pressure} mBar')
-                ],
-              ),
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/humidity.png",
-                    width: 30.0,
-                    height: 30.0,
-                    fit: BoxFit.cover,
-                  ),
-                  Text('humidity'),
-                  Text('${weatherResponse.main.humidity} %')
-                ],
-              ),
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/wind.png",
-                    width: 30.0,
-                    height: 30.0,
-                    fit: BoxFit.cover,
-                  ),
-                  Text("wind"),
-                  Text('${weatherResponse.wind.speed} km/h'),
-                ],
-              ),
+              boxItem("assets/pressure.png", 'pressure',
+                  '${weatherResponse.main.pressure} mBar'),
+              boxItem("assets/humidity.png", 'humidity',
+                  '${weatherResponse.main.humidity} %'),
+              boxItem("assets/wind.png", 'wind',
+                  '${weatherResponse.wind.speed} km/h'),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget boxItem(String imageSrc, String name, String value) {
+    return Column(
+      children: [
+        Image.asset(
+          "assets/sunrise.png",
+          width: 30.0,
+          height: 30.0,
+          fit: BoxFit.cover,
+        ),
+        Text(name),
+        Text(value),
+      ],
     );
   }
 }
